@@ -4,6 +4,7 @@
  * Purpose: Represents a checking account and demonstrates inheritance by
  * extending the base Account class.
  */
+// Inheritance demonstration: CheckingAccount inherits from Account.
 public class CheckingAccount extends Account {
     private double overdraftLimit;
 

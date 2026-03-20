@@ -14,6 +14,7 @@ public class User {
     private String phone;
     private String email;
 
+    // Composition demonstration: User contains a List<Account>.
     private List<Account> accounts;
 
     public User(String userId, String name, String address, String phone, String email) {
