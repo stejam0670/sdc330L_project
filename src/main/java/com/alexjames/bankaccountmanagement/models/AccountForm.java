@@ -6,6 +6,7 @@ package com.alexjames.bankaccountmanagement.models;
  * Purpose: Stores form input data for creating bank accounts through the web application.
  */
 public class AccountForm {
+    // Access specifier demonstration: form fields are private and accessed through getters/setters.
     private String holderName;
     private String email;
     private String accountType;
@@ -13,6 +14,7 @@ public class AccountForm {
     private double balance;
     private Double interestRate;
 
+    // Constructor demonstration: a default constructor supports Spring MVC form binding.
     public AccountForm() {
     }
 

@@ -15,11 +15,13 @@ import org.springframework.stereotype.Service;
 public class AccountService {
     private final Storage storage;
 
+    // Constructor demonstration: the service receives its storage dependency here.
     public AccountService(Storage storage) {
         this.storage = storage;
     }
 
     public void addAccount(Account account) {
+        // Layered architecture: business logic passes account data to the storage layer.
         storage.save(account);
     }
 
@@ -31,6 +33,7 @@ public class AccountService {
         List<Account> accounts = storage.findAll();
 
         for (Account account : accounts) {
+            // Polymorphism demonstration: subclasses are processed through the Account base type.
             if (account instanceof InterestEligible interestEligible) {
                 interestEligible.applyInterest();
                 storage.save(account);

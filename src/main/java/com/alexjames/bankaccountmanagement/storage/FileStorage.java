@@ -27,6 +27,7 @@ public class FileStorage implements Storage {
 
     @Override
     public void save(Account account) {
+        // File handling: existing records are read first so the matching account can be updated or appended.
         List<Account> accounts = findAll();
         boolean updated = false;
 
@@ -55,6 +56,7 @@ public class FileStorage implements Storage {
         }
 
         try {
+            // File handling: each line in the text file is converted back into an Account object.
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
             for (String line : lines) {
                 if (!line.isBlank()) {
@@ -78,6 +80,7 @@ public class FileStorage implements Storage {
 
         try {
             Files.createDirectories(path.getParent());
+            // File handling: one account record is written per line using the "|" delimiter.
             Files.write(path, lines, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("Unable to write account data to file.", e);
@@ -85,6 +88,7 @@ public class FileStorage implements Storage {
     }
 
     private String convertAccountToLine(Account account) {
+        // Polymorphism demonstration: the correct file format is chosen based on the runtime account subtype.
         if (account instanceof CheckingAccount checkingAccount) {
             return "CHECKING" + OUTPUT_DELIMITER
                     + checkingAccount.getAccountNumber() + OUTPUT_DELIMITER

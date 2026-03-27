@@ -24,12 +24,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AccountController {
     private final AccountService accountService;
 
+    // Constructor demonstration: Spring injects the service needed by this controller.
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 
     @GetMapping("/form")
     public String showForm(Model model) {
+        // MVC flow: the controller prepares an AccountForm object for Thymeleaf form binding.
         model.addAttribute("accountForm", new AccountForm());
         return "form";
     }
@@ -37,6 +39,7 @@ public class AccountController {
     @PostMapping("/form")
     public String processForm(@ModelAttribute("accountForm") AccountForm accountForm,
                               RedirectAttributes redirectAttributes) {
+        // MVC flow: submitted form data is converted into a domain object and passed to the service layer.
         Account account = convertFormToAccount(accountForm);
         accountService.addAccount(account);
 
@@ -51,12 +54,14 @@ public class AccountController {
 
     @GetMapping("/accounts")
     public String showAccounts(Model model) {
+        // Polymorphism demonstration: multiple account subclasses are retrieved as a List<Account>.
         List<Account> accounts = accountService.getAllAccounts();
         model.addAttribute("accounts", accounts);
         return "accounts";
     }
 
     private Account convertFormToAccount(AccountForm accountForm) {
+        // Composition demonstration: each account is created with an AccountHolder object.
         AccountHolder holder = new AccountHolder(accountForm.getHolderName(), accountForm.getEmail());
         String accountType = accountForm.getAccountType();
         Double interestRate = accountForm.getInterestRate() == null ? 0.0 : accountForm.getInterestRate();
