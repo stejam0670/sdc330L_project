@@ -1,10 +1,8 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
  * Name: Alex James
- * Date: 2026-03-19
+ * Date: 2026-03-26
  * Purpose: Entry point for the Week 2 bank account management demonstration.
  */
 public class App {
@@ -24,43 +22,40 @@ public class App {
             visitorName = "Guest";
         }
 
-        User user = new User("U1001", "Jordan Miles", "jordan.miles@email.com");
+        Bank bank = new Bank("Community Trust Bank");
+
+        User userOne = new User("U1001", "Jordan Miles", "jordan.miles@email.com");
+        User userTwo = new User("U1002", "Taylor Brooks", "taylor.brooks@email.com");
 
         Account checking = new CheckingAccount("CHK-2001", 2450.75, 300.00);
         Account savings = new SavingsAccount("SAV-3001", 8900.50, 1.75);
         Account ira = new IRAAccount("IRA-4001", 15400.00, 2.25);
+        Account secondChecking = new CheckingAccount("CHK-2002", 1725.20, 250.00);
+        Account secondSavings = new SavingsAccount("SAV-3002", 6400.00, 1.50);
 
-        user.addAccount(checking);
-        user.addAccount(savings);
-        user.addAccount(ira);
+        userOne.addAccount(checking);
+        userOne.addAccount(savings);
+        userOne.addAccount(ira);
+
+        userTwo.addAccount(secondChecking);
+        userTwo.addAccount(secondSavings);
+
+        bank.addUser(userOne);
+        bank.addUser(userTwo);
 
         System.out.println();
         System.out.println("Hello, " + visitorName + ". Here is the Week 2 class data:");
+        System.out.println("Created bank: " + bank.getBankName());
         System.out.println();
-        user.displayUserInfo();
-        System.out.println();
-        System.out.println("Accounts before interest:");
 
-        // Polymorphism demonstration: different account types are stored in a List<Account>.
-        List<Account> accounts = new ArrayList<>(user.getAccounts());
-        for (Account account : accounts) {
-            account.displayInfo();
-        }
+        bank.displayAllUsers();
+        bank.displayAllAccounts();
 
-        // Polymorphism demonstration: different classes are treated as InterestEligible objects.
-        List<InterestEligible> interestAccounts = new ArrayList<>();
-        interestAccounts.add((InterestEligible) savings);
-        interestAccounts.add((InterestEligible) ira);
-
-        for (InterestEligible interestAccount : interestAccounts) {
-            interestAccount.applyInterest();
-        }
+        bank.applyInterestToEligibleAccounts();
 
         System.out.println();
-        System.out.println("Accounts after interest:");
-        for (Account account : accounts) {
-            account.displayInfo();
-        }
+        System.out.println("Updated balances after interest is applied:");
+        bank.displayAllAccounts();
 
         scanner.close();
     }

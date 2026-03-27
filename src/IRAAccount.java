@@ -1,6 +1,6 @@
 /**
  * Name: Alex James
- * Date: 2026-03-19
+ * Date: 2026-03-26
  * Purpose: Represents an IRA account that earns interest.
  */
 // Interface implementation: IRAAccount implements InterestEligible.
@@ -21,6 +21,9 @@ public class IRAAccount extends Account implements InterestEligible {
     public void applyInterest() {
         double interestAmount = getBalance() * (interestRate / 100.0);
         deposit(interestAmount);
+        System.out.printf("IRA account %s earned $%.2f in interest.%n",
+                getAccountNumber(),
+                interestAmount);
     }
 
     @Override

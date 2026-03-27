@@ -1,6 +1,6 @@
 /**
  * Name: Alex James
- * Date: 2026-03-19
+ * Date: 2026-03-26
  * Purpose: Defines the base account type for the Week 2 bank account project.
  */
 public abstract class Account {

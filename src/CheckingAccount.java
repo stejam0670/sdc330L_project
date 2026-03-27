@@ -1,6 +1,6 @@
 /**
  * Name: Alex James
- * Date: 2026-03-19
+ * Date: 2026-03-26
  * Purpose: Represents a checking account for the Week 2 project.
  */
 // Inheritance demonstration: CheckingAccount inherits from Account.
