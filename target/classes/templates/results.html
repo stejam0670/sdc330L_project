@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            color: #1f2933;
+            margin: 0;
+        }
+
+        main {
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 32px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        nav a {
+            margin-right: 16px;
+            color: #0f4c81;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Account Saved</h1>
+    <p>Your account information was submitted successfully.</p>
+    <p th:if="${savedAccountInfo}" th:text="${savedAccountInfo}">Saved account details appear here.</p>
+
+    <nav>
+        <a th:href="@{/form}" href="/form">Add Another Account</a>
+        <a th:href="@{/accounts}" href="/accounts">View Accounts</a>
+        <a th:href="@{/home}" href="/home">Home</a>
+    </nav>
+</main>
+</body>
+</html>

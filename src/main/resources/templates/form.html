@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            color: #1f2933;
+            margin: 0;
+        }
+
+        main {
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 32px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        nav a {
+            margin-right: 16px;
+            color: #0f4c81;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Account Form</h1>
+    <p>Enter account information and submit the form to save a new account.</p>
+
+    <form th:action="@{/form}" th:object="${accountForm}" method="post">
+        <div>
+            <label for="holderName">Account Holder Name</label>
+            <input id="holderName" type="text" th:field="*{holderName}" required>
+        </div>
+
+        <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" th:field="*{email}" required>
+        </div>
+
+        <div>
+            <label for="accountType">Account Type</label>
+            <select id="accountType" th:field="*{accountType}" required>
+                <option value="">Select Account Type</option>
+                <option value="CHECKING">Checking</option>
+                <option value="SAVINGS">Savings</option>
+                <option value="IRA">IRA</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="accountNumber">Account Number</label>
+            <input id="accountNumber" type="text" th:field="*{accountNumber}" required>
+        </div>
+
+        <div>
+            <label for="balance">Balance</label>
+            <input id="balance" type="number" step="0.01" th:field="*{balance}" required>
+        </div>
+
+        <div>
+            <label for="interestRate">Interest Rate (Optional)</label>
+            <input id="interestRate" type="number" step="0.01" th:field="*{interestRate}">
+        </div>
+
+        <button type="submit">Save Account</button>
+    </form>
+
+    <nav>
+        <a th:href="@{/home}" href="/home">Home</a>
+        <a th:href="@{/accounts}" href="/accounts">View Accounts</a>
+    </nav>
+</main>
+</body>
+</html>

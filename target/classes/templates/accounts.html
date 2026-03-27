@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fb;
+            color: #1f2933;
+            margin: 0;
+        }
+
+        main {
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 32px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        nav a {
+            margin-right: 16px;
+            color: #0f4c81;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Saved Accounts</h1>
+
+    <ul th:if="${!accounts.isEmpty()}">
+        <li th:each="account : ${accounts}" th:text="${account.accountInfo}">Account details</li>
+    </ul>
+
+    <p th:if="${accounts.isEmpty()}">No accounts have been saved yet.</p>
+
+    <nav>
+        <a th:href="@{/form}" href="/form">Add Account</a>
+        <a th:href="@{/home}" href="/home">Home</a>
+    </nav>
+</main>
+</body>
+</html>
