@@ -29,6 +29,16 @@ public class CheckingAccount extends Account {
     }
 
     @Override
+    public String getAccountTypeLabel() {
+        return "Checking";
+    }
+
+    @Override
+    public String getExtraDetails() {
+        return "Overdraft: $" + String.format("%.2f", overdraftLimit);
+    }
+
+    @Override
     public String getAccountInfo() {
         return "Checking Account -> " + super.getAccountInfo()
                 + ", Overdraft Limit: $" + String.format("%.2f", overdraftLimit);

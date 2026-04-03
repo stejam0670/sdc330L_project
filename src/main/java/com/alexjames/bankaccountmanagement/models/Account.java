@@ -82,4 +82,12 @@ public abstract class Account {
                 + ", Holder: " + holder.getName()
                 + " (" + holder.getEmail() + ")";
     }
+
+    // Abstraction demonstration: subclasses provide their own display label for the UI.
+    public abstract String getAccountTypeLabel();
+
+    // Polymorphism demonstration: subclasses can supply type-specific details for the account list.
+    public String getExtraDetails() {
+        return "-";
+    }
 }

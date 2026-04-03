@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bank Account Management System</title>
+    <title>Submission Results</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
 </head>
 <body>
 <main>
-    <p>Project Week 4</p>
-    <h1>Bank Account Management System</h1>
-    <h2>Alex James</h2>
-    <p>Welcome to the Week 4 Spring Boot MVC project.</p>
-    <p>Use the navigation links below to move to the account form page or the account listing page as those features are added.</p>
+    <h1>Account Saved</h1>
+    <p>Your account information was submitted successfully.</p>
+    <p th:if="${savedAccountInfo}" th:text="${savedAccountInfo}">Saved account details appear here.</p>
 
     <nav>
-        <a th:href="@{/form}" href="/form">Go to Form</a>
+        <a th:href="@{/form}" href="/form">Add Another Account</a>
         <a th:href="@{/accounts}" href="/accounts">View Accounts</a>
+        <a th:href="@{/home}" href="/home">Home</a>
     </nav>
 </main>
 </body>

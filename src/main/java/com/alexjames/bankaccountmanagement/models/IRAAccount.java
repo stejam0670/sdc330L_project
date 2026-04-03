@@ -30,6 +30,16 @@ public class IRAAccount extends Account implements InterestEligible {
     }
 
     @Override
+    public String getAccountTypeLabel() {
+        return "IRA";
+    }
+
+    @Override
+    public String getExtraDetails() {
+        return "Interest: " + String.format("%.2f", interestRate) + "%";
+    }
+
+    @Override
     public void applyInterest() {
         double interestAmount = getBalance() * (interestRate / 100.0);
         deposit(interestAmount);

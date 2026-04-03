@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+</head>
+<body>
+<main>
+    <h1>Account Form</h1>
+    <p>Enter account information and submit the form to save a new account.</p>
+    <div class="alert alert-error" th:if="${formErrorMessage}" th:text="${formErrorMessage}">
+        Please correct the highlighted fields and submit the form again.
+    </div>
+
+    <form th:action="@{/form}" th:object="${accountForm}" method="post" novalidate>
+        <div class="form-group">
+            <label for="holderName">Account Holder Name</label>
+            <input id="holderName" type="text" th:field="*{holderName}" th:errorclass="input-error">
+            <p class="field-error" th:if="${#fields.hasErrors('holderName')}" th:errors="*{holderName}">Account holder name error</p>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" th:field="*{email}" th:errorclass="input-error">
+            <p class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</p>
+        </div>
+
+        <div class="form-group">
+            <label for="accountType">Account Type</label>
+            <select id="accountType" th:field="*{accountType}" th:errorclass="input-error">
+                <option value="">Select Account Type</option>
+                <option value="CHECKING">Checking</option>
+                <option value="SAVINGS">Savings</option>
+                <option value="IRA">IRA</option>
+            </select>
+            <p class="field-error" th:if="${#fields.hasErrors('accountType')}" th:errors="*{accountType}">Account type error</p>
+        </div>
+
+        <div class="form-group">
+            <label for="accountNumber">Account Number</label>
+            <input id="accountNumber" type="text" th:field="*{accountNumber}" th:errorclass="input-error">
+            <p class="field-error" th:if="${#fields.hasErrors('accountNumber')}" th:errors="*{accountNumber}">Account number error</p>
+        </div>
+
+        <div class="form-group">
+            <label for="balance">Balance</label>
+            <input id="balance" type="number" step="0.01" th:field="*{balance}" th:errorclass="input-error">
+            <p class="field-error" th:if="${#fields.hasErrors('balance')}" th:errors="*{balance}">Balance error</p>
+        </div>
+
+        <div class="form-group">
+            <label for="interestRate">Interest Rate (Optional)</label>
+            <input id="interestRate" type="number" step="0.01" th:field="*{interestRate}">
+        </div>
+
+        <button type="submit">Save Account</button>
+    </form>
+
+    <nav>
+        <a th:href="@{/home}" href="/home">Home</a>
+        <a th:href="@{/accounts}" href="/accounts">View Accounts</a>
+    </nav>
+</main>
+</body>
+</html>
