@@ -8,8 +8,15 @@ package com.alexjames.bankaccountmanagement.models;
 public class CheckingAccount extends Account {
     private double overdraftLimit;
 
+    // Constructor demonstration: used when a new checking account is created from user input.
     public CheckingAccount(String accountNumber, double balance, AccountHolder holder, double overdraftLimit) {
         super(accountNumber, balance, holder);
+        this.overdraftLimit = overdraftLimit;
+    }
+
+    // Constructor demonstration: used when a checking account is rebuilt from a JDBC query result.
+    public CheckingAccount(Long id, String accountNumber, double balance, AccountHolder holder, double overdraftLimit) {
+        super(id, accountNumber, balance, holder);
         this.overdraftLimit = overdraftLimit;
     }
 

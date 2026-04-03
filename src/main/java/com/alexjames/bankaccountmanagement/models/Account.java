@@ -7,6 +7,9 @@ package com.alexjames.bankaccountmanagement.models;
  */
 // Abstraction demonstration: Account defines shared data and behavior for all account types.
 public abstract class Account {
+    // Access specifier demonstration: private fields hide database identity from direct outside mutation.
+    private Long id;
+
     // Access specifier demonstration: private fields protect internal state.
     private String accountNumber;
     private double balance;
@@ -19,6 +22,22 @@ public abstract class Account {
         this.accountNumber = accountNumber;
         this.balance = balance;
         this.holder = holder;
+    }
+
+    // Constructor demonstration: this overload supports rebuilding an Account from a database record.
+    public Account(Long id, String accountNumber, double balance, AccountHolder holder) {
+        this.id = id;
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.holder = holder;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getAccountNumber() {

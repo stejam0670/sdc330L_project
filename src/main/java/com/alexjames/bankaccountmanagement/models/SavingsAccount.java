@@ -9,8 +9,15 @@ package com.alexjames.bankaccountmanagement.models;
 public class SavingsAccount extends Account implements InterestEligible {
     private double interestRate;
 
+    // Constructor demonstration: used when a new savings account is created from form data.
     public SavingsAccount(String accountNumber, double balance, AccountHolder holder, double interestRate) {
         super(accountNumber, balance, holder);
+        this.interestRate = interestRate;
+    }
+
+    // Constructor demonstration: used when a savings account is rebuilt from JDBC data.
+    public SavingsAccount(Long id, String accountNumber, double balance, AccountHolder holder, double interestRate) {
+        super(id, accountNumber, balance, holder);
         this.interestRate = interestRate;
     }
 
