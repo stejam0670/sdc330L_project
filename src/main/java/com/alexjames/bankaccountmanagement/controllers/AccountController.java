@@ -7,8 +7,10 @@ import com.alexjames.bankaccountmanagement.models.CheckingAccount;
 import com.alexjames.bankaccountmanagement.models.IRAAccount;
 import com.alexjames.bankaccountmanagement.models.SavingsAccount;
 import com.alexjames.bankaccountmanagement.services.AccountService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,8 +39,15 @@ public class AccountController {
     }
 
     @PostMapping("/form")
-    public String processForm(@ModelAttribute("accountForm") AccountForm accountForm,
+    public String processForm(@Valid @ModelAttribute("accountForm") AccountForm accountForm,
+                              BindingResult bindingResult,
+                              Model model,
                               RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("formErrorMessage", "Please correct the highlighted fields and submit the form again.");
+            return "form";
+        }
+
         // MVC flow: submitted form data is converted into a domain object and passed to the service layer.
         Account account = convertFormToAccount(accountForm);
         accountService.addAccount(account);
