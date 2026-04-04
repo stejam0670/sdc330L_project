@@ -1,6 +1,7 @@
 package com.alexjames.bankaccountmanagement.storage;
 
 import com.alexjames.bankaccountmanagement.models.Account;
+import com.alexjames.bankaccountmanagement.models.Transaction;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +20,12 @@ public interface Storage {
     void update(Account account);
 
     void deleteById(long id);
+
+    Transaction createTransaction(Transaction transaction);
+
+    List<Transaction> findTransactionsByAccountId(long accountId);
+
+    Optional<Transaction> findTransactionById(long transactionId);
+
+    void deleteTransactionById(long transactionId);
 }

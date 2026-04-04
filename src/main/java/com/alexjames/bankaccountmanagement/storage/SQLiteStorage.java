@@ -5,6 +5,8 @@ import com.alexjames.bankaccountmanagement.models.AccountHolder;
 import com.alexjames.bankaccountmanagement.models.CheckingAccount;
 import com.alexjames.bankaccountmanagement.models.IRAAccount;
 import com.alexjames.bankaccountmanagement.models.SavingsAccount;
+import com.alexjames.bankaccountmanagement.models.Transaction;
+import com.alexjames.bankaccountmanagement.models.TransactionType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -57,6 +60,18 @@ public class SQLiteStorage implements Storage {
             ) VALUES (?, ?, ?, ?, ?, ?, ?)
             """;
 
+    private static final String CREATE_TRANSACTIONS_TABLE_SQL = """
+            CREATE TABLE IF NOT EXISTS transactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_id INTEGER NOT NULL,
+                transaction_name TEXT NOT NULL,
+                transaction_type TEXT NOT NULL,
+                amount REAL NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (account_id) REFERENCES accounts (id)
+            )
+            """;
+
     private static final String SELECT_ALL_SQL = """
             SELECT id, account_number, account_type, holder_name, holder_email, balance, interest_rate, overdraft_limit
             FROM accounts
@@ -83,6 +98,34 @@ public class SQLiteStorage implements Storage {
 
     private static final String DELETE_BY_ID_SQL = """
             DELETE FROM accounts
+            WHERE id = ?
+            """;
+
+    private static final String INSERT_TRANSACTION_SQL = """
+            INSERT INTO transactions (
+                account_id,
+                transaction_name,
+                transaction_type,
+                amount,
+                created_at
+            ) VALUES (?, ?, ?, ?, ?)
+            """;
+
+    private static final String SELECT_TRANSACTIONS_BY_ACCOUNT_ID_SQL = """
+            SELECT id, account_id, transaction_name, transaction_type, amount, created_at
+            FROM transactions
+            WHERE account_id = ?
+            ORDER BY created_at DESC, id DESC
+            """;
+
+    private static final String SELECT_TRANSACTION_BY_ID_SQL = """
+            SELECT id, account_id, transaction_name, transaction_type, amount, created_at
+            FROM transactions
+            WHERE id = ?
+            """;
+
+    private static final String DELETE_TRANSACTION_BY_ID_SQL = """
+            DELETE FROM transactions
             WHERE id = ?
             """;
 
@@ -184,6 +227,82 @@ public class SQLiteStorage implements Storage {
         }
     }
 
+    @Override
+    public Transaction createTransaction(Transaction transaction) {
+        try (Connection connection = openConnection();
+             PreparedStatement statement = connection.prepareStatement(INSERT_TRANSACTION_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setLong(1, transaction.getAccountId());
+            statement.setString(2, transaction.getTransactionName());
+            statement.setString(3, transaction.getTransactionType().name());
+            statement.setDouble(4, transaction.getAmount());
+            statement.setString(5, transaction.getCreatedAt().toString());
+            statement.executeUpdate();
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    transaction.setId(generatedKeys.getLong(1));
+                }
+            }
+
+            return transaction;
+        } catch (SQLException exception) {
+            throw new RuntimeException("Unable to insert transaction into SQLite.", exception);
+        }
+    }
+
+    @Override
+    public List<Transaction> findTransactionsByAccountId(long accountId) {
+        List<Transaction> transactions = new ArrayList<>();
+
+        try (Connection connection = openConnection();
+             PreparedStatement statement = connection.prepareStatement(SELECT_TRANSACTIONS_BY_ACCOUNT_ID_SQL)) {
+            statement.setLong(1, accountId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    transactions.add(mapRowToTransaction(resultSet));
+                }
+            }
+        } catch (SQLException exception) {
+            throw new RuntimeException("Unable to read transactions for account " + accountId + " from SQLite.", exception);
+        }
+
+        return transactions;
+    }
+
+    @Override
+    public Optional<Transaction> findTransactionById(long transactionId) {
+        try (Connection connection = openConnection();
+             PreparedStatement statement = connection.prepareStatement(SELECT_TRANSACTION_BY_ID_SQL)) {
+            statement.setLong(1, transactionId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Optional.of(mapRowToTransaction(resultSet));
+                }
+            }
+
+            return Optional.empty();
+        } catch (SQLException exception) {
+            throw new RuntimeException("Unable to read transaction " + transactionId + " from SQLite.", exception);
+        }
+    }
+
+    @Override
+    public void deleteTransactionById(long transactionId) {
+        try (Connection connection = openConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_TRANSACTION_BY_ID_SQL)) {
+            statement.setLong(1, transactionId);
+
+            int deletedRows = statement.executeUpdate();
+            if (deletedRows == 0) {
+                throw new IllegalArgumentException("Transaction with id " + transactionId + " was not found.");
+            }
+        } catch (SQLException exception) {
+            throw new RuntimeException("Unable to delete transaction " + transactionId + " from SQLite.", exception);
+        }
+    }
+
     private void initializeDatabase(String databasePath) {
         try {
             Path parentPath = Paths.get(databasePath).toAbsolutePath().getParent();
@@ -197,6 +316,7 @@ public class SQLiteStorage implements Storage {
         try (Connection connection = openConnection();
              Statement statement = connection.createStatement()) {
             statement.execute(CREATE_TABLE_SQL);
+            statement.execute(CREATE_TRANSACTIONS_TABLE_SQL);
         } catch (SQLException exception) {
             throw new RuntimeException("Unable to initialize the SQLite database.", exception);
         }
@@ -255,6 +375,17 @@ public class SQLiteStorage implements Storage {
         }
 
         throw new IllegalArgumentException("Unsupported account type: " + account.getClass().getSimpleName());
+    }
+
+    private Transaction mapRowToTransaction(ResultSet resultSet) throws SQLException {
+        long id = resultSet.getLong("id");
+        long accountId = resultSet.getLong("account_id");
+        String transactionName = resultSet.getString("transaction_name");
+        TransactionType transactionType = TransactionType.valueOf(resultSet.getString("transaction_type"));
+        double amount = resultSet.getDouble("amount");
+        LocalDateTime createdAt = LocalDateTime.parse(resultSet.getString("created_at"));
+
+        return new Transaction(id, accountId, transactionName, transactionType, amount, createdAt);
     }
 
     private double extractInterestRate(Account account) {

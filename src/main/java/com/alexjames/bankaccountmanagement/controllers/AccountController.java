@@ -6,6 +6,8 @@ import com.alexjames.bankaccountmanagement.models.AccountHolder;
 import com.alexjames.bankaccountmanagement.models.CheckingAccount;
 import com.alexjames.bankaccountmanagement.models.IRAAccount;
 import com.alexjames.bankaccountmanagement.models.SavingsAccount;
+import com.alexjames.bankaccountmanagement.models.Transaction;
+import com.alexjames.bankaccountmanagement.models.TransactionForm;
 import com.alexjames.bankaccountmanagement.services.AccountService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -14,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -69,6 +72,61 @@ public class AccountController {
         return "accounts";
     }
 
+    @GetMapping("/accounts/{id}/transactions")
+    public String showTransactions(@PathVariable long id, Model model) {
+        populateTransactionPage(model, accountService.getAccountById(id), new TransactionForm(), new TransactionForm());
+        return "transactions";
+    }
+
+    @PostMapping("/accounts/{id}/transactions/deposit")
+    public String deposit(@PathVariable long id,
+                          @Valid @ModelAttribute("depositForm") TransactionForm depositForm,
+                          BindingResult bindingResult,
+                          Model model,
+                          RedirectAttributes redirectAttributes) {
+        Account account = accountService.getAccountById(id);
+
+        if (bindingResult.hasErrors()) {
+            populateTransactionPage(model, account, depositForm, new TransactionForm());
+            model.addAttribute("transactionErrorMessage", "Please correct the deposit fields and try again.");
+            return "transactions";
+        }
+
+        accountService.deposit(id, depositForm.getTransactionName(), depositForm.getAmount());
+        redirectAttributes.addFlashAttribute("transactionSuccessMessage", "Deposit saved successfully.");
+        return "redirect:/accounts/" + id + "/transactions";
+    }
+
+    @PostMapping("/accounts/{id}/transactions/withdraw")
+    public String withdraw(@PathVariable long id,
+                           @Valid @ModelAttribute("withdrawForm") TransactionForm withdrawForm,
+                           BindingResult bindingResult,
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
+        Account account = accountService.getAccountById(id);
+
+        if (bindingResult.hasErrors()) {
+            populateTransactionPage(model, account, new TransactionForm(), withdrawForm);
+            model.addAttribute("transactionErrorMessage", "Please correct the withdrawal fields and try again.");
+            return "transactions";
+        }
+
+        accountService.withdraw(id, withdrawForm.getTransactionName(), withdrawForm.getAmount());
+        redirectAttributes.addFlashAttribute("transactionSuccessMessage", "Withdrawal saved successfully.");
+        return "redirect:/accounts/" + id + "/transactions";
+    }
+
+    @PostMapping("/accounts/{accountId}/transactions/{transactionId}/rollback")
+    public String rollbackTransaction(@PathVariable long accountId,
+                                      @PathVariable long transactionId,
+                                      RedirectAttributes redirectAttributes) {
+        Transaction transaction = accountService.rollbackTransaction(accountId, transactionId);
+        redirectAttributes.addFlashAttribute(
+                "transactionSuccessMessage",
+                transaction.getTransactionType().getLabel() + " rolled back and removed from history.");
+        return "redirect:/accounts/" + accountId + "/transactions";
+    }
+
     private Account convertFormToAccount(AccountForm accountForm) {
         // Composition demonstration: each account is created with an AccountHolder object.
         AccountHolder holder = new AccountHolder(accountForm.getHolderName(), accountForm.getEmail());
@@ -96,5 +154,13 @@ public class AccountController {
                 accountForm.getBalance(),
                 holder,
                 0.0);
+    }
+
+    private void populateTransactionPage(Model model, Account account, TransactionForm depositForm, TransactionForm withdrawForm) {
+        List<Transaction> transactions = accountService.getTransactionsForAccount(account.getId());
+        model.addAttribute("account", account);
+        model.addAttribute("transactions", transactions);
+        model.addAttribute("depositForm", depositForm);
+        model.addAttribute("withdrawForm", withdrawForm);
     }
 }

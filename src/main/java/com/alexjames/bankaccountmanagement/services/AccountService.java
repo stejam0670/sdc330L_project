@@ -3,7 +3,10 @@ package com.alexjames.bankaccountmanagement.services;
 import com.alexjames.bankaccountmanagement.models.Account;
 import com.alexjames.bankaccountmanagement.models.AccountHolder;
 import com.alexjames.bankaccountmanagement.models.InterestEligible;
+import com.alexjames.bankaccountmanagement.models.Transaction;
+import com.alexjames.bankaccountmanagement.models.TransactionType;
 import com.alexjames.bankaccountmanagement.storage.Storage;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -37,30 +40,34 @@ public class AccountService {
     }
 
     public Account deposit(long id, double amount) {
+        return deposit(id, "Deposit", amount);
+    }
+
+    public Account deposit(long id, String transactionName, double amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Deposit amount must be greater than zero.");
         }
 
         Account account = getAccountById(id);
-        account.deposit(amount);
+        applyBalanceDelta(account, amount);
         storage.update(account);
+        saveTransaction(account.getId(), transactionName, TransactionType.DEPOSIT, amount);
         return account;
     }
 
     public Account withdraw(long id, double amount) {
+        return withdraw(id, "Withdrawal", amount);
+    }
+
+    public Account withdraw(long id, String transactionName, double amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Withdrawal amount must be greater than zero.");
         }
 
         Account account = getAccountById(id);
-        double previousBalance = account.getBalance();
-        account.withdraw(amount);
-
-        if (account.getBalance() == previousBalance) {
-            throw new IllegalArgumentException("Withdrawal could not be completed.");
-        }
-
+        applyBalanceDelta(account, -amount);
         storage.update(account);
+        saveTransaction(account.getId(), transactionName, TransactionType.WITHDRAWAL, amount);
         return account;
     }
 
@@ -76,6 +83,26 @@ public class AccountService {
         storage.deleteById(id);
     }
 
+    public List<Transaction> getTransactionsForAccount(long accountId) {
+        getAccountById(accountId);
+        return storage.findTransactionsByAccountId(accountId);
+    }
+
+    public Transaction rollbackTransaction(long accountId, long transactionId) {
+        Account account = getAccountById(accountId);
+        Transaction transaction = storage.findTransactionById(transactionId)
+                .orElseThrow(() -> new IllegalArgumentException("Transaction with id " + transactionId + " was not found."));
+
+        if (!accountIdEquals(accountId, transaction)) {
+            throw new IllegalArgumentException("Transaction " + transactionId + " does not belong to account " + accountId + ".");
+        }
+
+        applyBalanceDelta(account, reverseTransactionDelta(transaction));
+        storage.update(account);
+        storage.deleteTransactionById(transactionId);
+        return transaction;
+    }
+
     public void applyInterest() {
         List<Account> accounts = storage.findAll();
 
@@ -86,5 +113,30 @@ public class AccountService {
                 storage.update(account);
             }
         }
+    }
+
+    private void saveTransaction(Long accountId, String transactionName, TransactionType transactionType, double amount) {
+        storage.createTransaction(new Transaction(
+                accountId,
+                transactionName,
+                transactionType,
+                amount,
+                LocalDateTime.now()));
+    }
+
+    private boolean accountIdEquals(long accountId, Transaction transaction) {
+        return transaction.getAccountId() != null && transaction.getAccountId() == accountId;
+    }
+
+    private void applyBalanceDelta(Account account, double delta) {
+        account.setBalance(account.getBalance() + delta);
+    }
+
+    private double reverseTransactionDelta(Transaction transaction) {
+        if (transaction.getTransactionType() == TransactionType.DEPOSIT) {
+            return -transaction.getAmount();
+        }
+
+        return transaction.getAmount();
     }
 }

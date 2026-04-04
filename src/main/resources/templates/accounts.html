@@ -29,6 +29,7 @@
                 <th>Holder Email</th>
                 <th>Balance</th>
                 <th>Extra Details</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -39,6 +40,13 @@
                 <td th:text="${account.holder.email}">alex@example.com</td>
                 <td th:text="${'$' + #numbers.formatDecimal(account.balance, 1, 2)}">$0.00</td>
                 <td th:text="${account.extraDetails}">Extra details</td>
+                <td>
+                    <div class="action-links">
+                        <a class="action-link"
+                           th:href="@{/accounts/{id}/transactions(id=${account.id})}"
+                           href="/accounts/1/transactions">Transactions</a>
+                    </div>
+                </td>
             </tr>
             </tbody>
         </table>
