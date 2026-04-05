@@ -46,3 +46,7 @@ This project is a Spring Boot MVC web application for creating and managing bank
 3. Open `http://localhost:8080/home` in your browser.
 
 The SQLite database file is created automatically at `data/bank.db`.
+
+## Video link
+
+https://streamable.com/dw88a3
