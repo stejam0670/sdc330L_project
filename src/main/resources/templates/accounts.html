@@ -1,65 +1,73 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Accounts</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
-</head>
-<body>
-<main>
-    <section class="page-header">
+    <link
+      rel="stylesheet"
+      th:href="@{/css/styles.css}"
+      href="/css/styles.css"
+    />
+  </head>
+  <body>
+    <main>
+      <section class="page-header">
         <div>
-            <h1>Saved Accounts</h1>
-            <p class="page-subtitle">Review account details, balances, and available account actions.</p>
+          <h1>Saved Accounts</h1>
+          <p class="page-subtitle">
+            Review account details, balances, and available account actions.
+          </p>
         </div>
         <nav class="page-nav">
-            <a class="nav-link" th:href="@{/form}" href="/form">Add Account</a>
-            <a class="nav-link" th:href="@{/home}" href="/home">Home</a>
+          <a class="nav-link" th:href="@{/form}" href="/form">Add Account</a>
+          <a class="nav-link" th:href="@{/home}" href="/home">Home</a>
         </nav>
-    </section>
+      </section>
 
-    <section class="table-card" th:if="${!accounts.isEmpty()}">
+      <section class="table-card" th:if="${!accounts.isEmpty()}">
         <table class="accounts-table">
-            <thead>
+          <thead>
             <tr>
-                <th>Account Number</th>
-                <th>Account Type</th>
-                <th>Holder Name</th>
-                <th>Holder Email</th>
-                <th>Balance</th>
-                <th>Extra Details</th>
-                <th>Actions</th>
+              <th>Account Number</th>
+              <th>Account Type</th>
+              <th>Holder Name</th>
+              <th>Holder Email</th>
+              <th>Balance</th>
+              <th>Extra Details</th>
+              <th>Actions</th>
             </tr>
-            </thead>
-            <tbody>
+          </thead>
+          <tbody>
             <tr th:each="account : ${accounts}">
-                <td th:text="${account.accountNumber}">10001</td>
-                <td th:text="${account.accountTypeLabel}">Checking</td>
-                <td th:text="${account.holder.name}">Alex James</td>
-                <td th:text="${account.holder.email}">alex@example.com</td>
-                <td th:text="${'$' + #numbers.formatDecimal(account.balance, 1, 2)}">$0.00</td>
-                <td th:text="${account.extraDetails}">Extra details</td>
-                <td>
-                    <div class="action-links">
-                        <a class="action-link"
-                           th:href="@{/accounts/{id}/transactions(id=${account.id})}"
-                           href="/accounts/1/transactions">Transactions</a>
-                    </div>
-                </td>
+              <td th:text="${account.accountNumber}">10001</td>
+              <td th:text="${account.accountTypeLabel}">Checking</td>
+              <td th:text="${account.holder.name}">Alex James</td>
+              <td th:text="${account.holder.email}">alex@example.com</td>
+              <td
+                th:text="${'$' + #numbers.formatDecimal(account.balance, 1, 2)}"
+              >
+                $0.00
+              </td>
+              <td th:text="${account.extraDetails}">Extra details</td>
+              <td>
+                <div class="action-links">
+                  <a
+                    class="action-link"
+                    th:href="@{/accounts/{id}/transactions(id=${account.id})}"
+                    href="/accounts/1/transactions"
+                    >Transactions</a
+                  >
+                </div>
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
-    </section>
+      </section>
 
-    <section class="empty-state" th:if="${accounts.isEmpty()}">
+      <section class="empty-state" th:if="${accounts.isEmpty()}">
         <p>No accounts have been saved yet.</p>
-    </section>
-
-    <nav class="page-nav page-nav-bottom">
-        <a th:href="@{/form}" href="/form">Add Account</a>
-        <a th:href="@{/home}" href="/home">Home</a>
-    </nav>
-</main>
-</body>
+      </section>
+    </main>
+  </body>
 </html>

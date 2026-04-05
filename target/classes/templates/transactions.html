@@ -1,127 +1,197 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transaction History</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
-</head>
-<body>
-<main>
-    <section class="page-header">
+    <link
+      rel="stylesheet"
+      th:href="@{/css/styles.css}"
+      href="/css/styles.css"
+    />
+  </head>
+  <body>
+    <main>
+      <section class="page-header">
         <div>
-            <h1>Transaction History</h1>
-            <p class="page-subtitle" th:text="${account.accountTypeLabel + ' account for ' + account.holder.name}">
-                Account summary
-            </p>
-            <p class="account-balance" th:text="${'Current Balance: $' + #numbers.formatDecimal(account.balance, 1, 2)}">
-                Current Balance: $0.00
-            </p>
+          <h1>Transaction History</h1>
+          <p
+            class="page-subtitle"
+            th:text="${account.accountTypeLabel + ' account for ' + account.holder.name}"
+          >
+            Account summary
+          </p>
+          <p
+            class="account-balance"
+            th:text="${'Current Balance: $' + #numbers.formatDecimal(account.balance, 1, 2)}"
+          >
+            Current Balance: $0.00
+          </p>
         </div>
         <nav class="page-nav">
-            <a class="nav-link" th:href="@{/accounts}" href="/accounts">Back to Accounts</a>
-            <a class="nav-link" th:href="@{/home}" href="/home">Home</a>
+          <a class="nav-link" th:href="@{/accounts}" href="/accounts"
+            >Back to Accounts</a
+          >
+          <a class="nav-link" th:href="@{/home}" href="/home">Home</a>
         </nav>
-    </section>
+      </section>
 
-    <div class="alert alert-success" th:if="${transactionSuccessMessage}" th:text="${transactionSuccessMessage}">
+      <div
+        class="alert alert-success"
+        th:if="${transactionSuccessMessage}"
+        th:text="${transactionSuccessMessage}"
+      >
         Transaction saved successfully.
-    </div>
-    <div class="alert alert-error" th:if="${transactionErrorMessage}" th:text="${transactionErrorMessage}">
+      </div>
+      <div
+        class="alert alert-error"
+        th:if="${transactionErrorMessage}"
+        th:text="${transactionErrorMessage}"
+      >
         Please correct the highlighted fields and try again.
-    </div>
+      </div>
 
-    <section class="transaction-grid">
+      <section class="transaction-grid">
         <article class="table-card transaction-panel">
-            <div class="panel-header">
-                <h2>Add Deposit</h2>
-                <p>Record a credit posted to this account.</p>
+          <div class="panel-header">
+            <h2>Add Deposit</h2>
+            <p>Record a credit posted to this account.</p>
+          </div>
+          <form
+            th:action="@{/accounts/{id}/transactions/deposit(id=${account.id})}"
+            th:object="${depositForm}"
+            method="post"
+            novalidate
+          >
+            <div class="form-group">
+              <label for="depositName">Transaction Name</label>
+              <input
+                id="depositName"
+                type="text"
+                th:field="*{transactionName}"
+                th:errorclass="input-error"
+              />
+              <p
+                class="field-error"
+                th:if="${#fields.hasErrors('transactionName')}"
+                th:errors="*{transactionName}"
+              >
+                Transaction name error
+              </p>
             </div>
-            <form th:action="@{/accounts/{id}/transactions/deposit(id=${account.id})}"
-                  th:object="${depositForm}"
-                  method="post"
-                  novalidate>
-                <div class="form-group">
-                    <label for="depositName">Transaction Name</label>
-                    <input id="depositName" type="text" th:field="*{transactionName}" th:errorclass="input-error">
-                    <p class="field-error" th:if="${#fields.hasErrors('transactionName')}" th:errors="*{transactionName}">
-                        Transaction name error
-                    </p>
-                </div>
 
-                <div class="form-group">
-                    <label for="depositAmount">Amount</label>
-                    <input id="depositAmount" type="number" step="0.01" th:field="*{amount}" th:errorclass="input-error">
-                    <p class="field-error" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">
-                        Amount error
-                    </p>
-                </div>
+            <div class="form-group">
+              <label for="depositAmount">Amount</label>
+              <input
+                id="depositAmount"
+                type="number"
+                step="0.01"
+                th:field="*{amount}"
+                th:errorclass="input-error"
+              />
+              <p
+                class="field-error"
+                th:if="${#fields.hasErrors('amount')}"
+                th:errors="*{amount}"
+              >
+                Amount error
+              </p>
+            </div>
 
-                <button type="submit">Save Deposit</button>
-            </form>
+            <button type="submit">Save Deposit</button>
+          </form>
         </article>
 
         <article class="table-card transaction-panel">
-            <div class="panel-header">
-                <h2>Add Withdrawal</h2>
-                <p>Record a debit even if it drives the balance negative.</p>
+          <div class="panel-header">
+            <h2>Add Withdrawal</h2>
+            <p>Record a debit even if it drives the balance negative.</p>
+          </div>
+          <form
+            th:action="@{/accounts/{id}/transactions/withdraw(id=${account.id})}"
+            th:object="${withdrawForm}"
+            method="post"
+            novalidate
+          >
+            <div class="form-group">
+              <label for="withdrawName">Transaction Name</label>
+              <input
+                id="withdrawName"
+                type="text"
+                th:field="*{transactionName}"
+                th:errorclass="input-error"
+              />
+              <p
+                class="field-error"
+                th:if="${#fields.hasErrors('transactionName')}"
+                th:errors="*{transactionName}"
+              >
+                Transaction name error
+              </p>
             </div>
-            <form th:action="@{/accounts/{id}/transactions/withdraw(id=${account.id})}"
-                  th:object="${withdrawForm}"
-                  method="post"
-                  novalidate>
-                <div class="form-group">
-                    <label for="withdrawName">Transaction Name</label>
-                    <input id="withdrawName" type="text" th:field="*{transactionName}" th:errorclass="input-error">
-                    <p class="field-error" th:if="${#fields.hasErrors('transactionName')}" th:errors="*{transactionName}">
-                        Transaction name error
-                    </p>
-                </div>
 
-                <div class="form-group">
-                    <label for="withdrawAmount">Amount</label>
-                    <input id="withdrawAmount" type="number" step="0.01" th:field="*{amount}" th:errorclass="input-error">
-                    <p class="field-error" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}">
-                        Amount error
-                    </p>
-                </div>
+            <div class="form-group">
+              <label for="withdrawAmount">Amount</label>
+              <input
+                id="withdrawAmount"
+                type="number"
+                step="0.01"
+                th:field="*{amount}"
+                th:errorclass="input-error"
+              />
+              <p
+                class="field-error"
+                th:if="${#fields.hasErrors('amount')}"
+                th:errors="*{amount}"
+              >
+                Amount error
+              </p>
+            </div>
 
-                <button type="submit">Save Withdrawal</button>
-            </form>
+            <button type="submit">Save Withdrawal</button>
+          </form>
         </article>
-    </section>
+      </section>
 
-    <section class="table-card" th:if="${!transactions.isEmpty()}">
+      <section class="table-card" th:if="${!transactions.isEmpty()}">
         <table class="accounts-table">
-            <thead>
+          <thead>
             <tr>
-                <th>Date</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Rollback</th>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Rollback</th>
             </tr>
-            </thead>
-            <tbody>
+          </thead>
+          <tbody>
             <tr th:each="transaction : ${transactions}">
-                <td th:text="${transaction.createdAtLabel}">Apr 4, 2026 10:30 AM</td>
-                <td th:text="${transaction.transactionName}">Rent Payment</td>
-                <td th:text="${transaction.transactionType.label}">Withdrawal</td>
-                <td th:text="${'$' + #numbers.formatDecimal(transaction.amount, 1, 2)}">$0.00</td>
-                <td>
-                    <form th:action="@{/accounts/{accountId}/transactions/{transactionId}/rollback(accountId=${account.id},transactionId=${transaction.id})}"
-                          method="post">
-                        <button class="button-danger" type="submit">Rollback</button>
-                    </form>
-                </td>
+              <td th:text="${transaction.createdAtLabel}">
+                Apr 4, 2026 10:30 AM
+              </td>
+              <td th:text="${transaction.transactionName}">Rent Payment</td>
+              <td th:text="${transaction.transactionType.label}">Withdrawal</td>
+              <td
+                th:text="${'$' + #numbers.formatDecimal(transaction.amount, 1, 2)}"
+              >
+                $0.00
+              </td>
+              <td>
+                <form
+                  th:action="@{/accounts/{accountId}/transactions/{transactionId}/rollback(accountId=${account.id},transactionId=${transaction.id})}"
+                  method="post"
+                >
+                  <button class="button-danger" type="submit">Rollback</button>
+                </form>
+              </td>
             </tr>
-            </tbody>
+          </tbody>
         </table>
-    </section>
+      </section>
 
-    <section class="empty-state" th:if="${transactions.isEmpty()}">
+      <section class="empty-state" th:if="${transactions.isEmpty()}">
         <p>No transactions have been recorded for this account yet.</p>
-    </section>
-</main>
-</body>
+      </section>
+    </main>
+  </body>
 </html>
