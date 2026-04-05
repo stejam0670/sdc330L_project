@@ -178,8 +178,10 @@
               </td>
               <td>
                 <form
+                  class="rollback-form"
                   th:action="@{/accounts/{accountId}/transactions/{transactionId}/rollback(accountId=${account.id},transactionId=${transaction.id})}"
                   method="post"
+                  th:attr="data-transaction-name=${transaction.transactionName}"
                 >
                   <button class="button-danger" type="submit">Rollback</button>
                 </form>
@@ -193,5 +195,19 @@
         <p>No transactions have been recorded for this account yet.</p>
       </section>
     </main>
+    <script>
+      document.querySelectorAll(".rollback-form").forEach((form) => {
+        form.addEventListener("submit", (event) => {
+          const transactionName = form.dataset.transactionName || "this transaction";
+          const confirmed = window.confirm(
+            `Roll back "${transactionName}"? This will remove it from the account history.`
+          );
+
+          if (!confirmed) {
+            event.preventDefault();
+          }
+        });
+      });
+    </script>
   </body>
 </html>
